@@ -1,60 +1,76 @@
 <template>
   <v-app>
-    <v-app-bar
-      app
-      color="primary"
-      dark
-    >
-      <div class="d-flex align-center">
-        <v-img
-          alt="Vuetify Logo"
-          class="shrink mr-2"
-          contain
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
-          transition="scale-transition"
-          width="40"
-        />
-
-        <v-img
-          alt="Vuetify Name"
-          class="shrink mt-1 hidden-sm-and-down"
-          contain
-          min-width="100"
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-name-dark.png"
-          width="100"
-        />
-      </div>
-
-      <v-spacer></v-spacer>
-
-      <v-btn
-        href="https://github.com/vuetifyjs/vuetify/releases/latest"
-        target="_blank"
-        text
-      >
-        <span class="mr-2">Latest Release</span>
-        <v-icon>mdi-open-in-new</v-icon>
-      </v-btn>
-    </v-app-bar>
-
-    <v-content>
-      <HelloWorld/>
-    </v-content>
+    <core-toolbar
+      v-if="$route.path!=='/login' && $route.path!=='/404'&& $route.path!=='/landingPage'
+      && $route.path!=='/publicos' && $route.path!=='/detalhe'"/>
+    <core-drawer
+      v-if="$route.path!=='/login' && $route.path!=='/404' && $route.path!=='/landingPage'
+      && $route.path!=='/publicos' && $route.path!=='/detalhe'"/>
+    <core-view />
   </v-app>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld';
+import { mapState, mapActions } from 'vuex'
 
 export default {
   name: 'App',
-
   components: {
-    HelloWorld,
   },
-
-  data: () => ({
-    //
-  }),
-};
+  computed: {
+    ...mapState({
+      alert: state => state.alert
+    })
+  },
+  watch: {
+    $route (to, from) {
+      this.clearAlert()
+    }
+  },
+  methods: {
+    ...mapActions({
+      clearAlert: 'alert/clear'
+    })
+  }
+}
 </script>
+
+<style lang="scss">
+@import '@/styles/index.scss';
+
+html {
+  background: #EEEEEE;
+}
+.v-toolbar {
+  contain: layout;
+  flex: 0;
+  max-width: 100%;
+  box-shadow: 0 2px 4px -1px rgba(0,0,0,.2), 0 4px 5px 0 rgba(0,0,0,.14), 0 1px 10px 0 rgba(0,0,0,.12);
+}
+.v-card .v-offset .v-card--material__header.v-card{
+  color: white !important;
+}
+.v-navigation-drawer .v-list .v-divider {
+  border-color: rgba(180, 180, 180, 0.3);
+  margin: -1px auto 0px;
+  width: calc(100% - 30px);
+}
+.v-btn--floating, .v-btn--icon:before{
+  border-radius: 50% !important;
+}
+.v-list-item {
+  margin: 5px 15px 5px !important;
+}
+.v-list__group__header {
+  margin-left: 20px !important;
+  padding-top: 10px !important;
+  padding-bottom: 10px !important;
+}
+.caixaLogin {
+  margin-top: 100px;
+  font-size: 16px;
+}
+.v-application{
+  font-family: 'Poppins', sans-serif;
+}
+</style>
