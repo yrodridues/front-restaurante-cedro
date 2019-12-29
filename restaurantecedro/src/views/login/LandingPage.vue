@@ -1,3 +1,4 @@
+/* eslint-disable */
 <template>
   <v-img src="./img/wallpaper.jpg">
     <div>
@@ -7,11 +8,14 @@
         <div class="flex-grow-2"/>
         <v-spacer/>
         <v-spacer/>
-        <h4 class="subheading">Projeto Restaurante</h4>
-        <v-icon>mdi-login</v-icon>
-        <div class="flex-grow-1"/>
+        <v-btn
+          icon
+          href="/publicos"> Gerenciar Pratos
+          <v-icon>mdi-send</v-icon>
+        </v-btn>
+        <div class="flex-grow-2"/>
         <v-spacer/>
-        <div class="flex-grow-1"/>
+        <v-spacer/>
       </v-app-bar>
     </div>
     <v-parallax
@@ -24,7 +28,7 @@
         lg12>
         <material-card
           color="deep-purple"
-          title="Cadastrar Restaurante">
+          title="Cadastrar Restaurante:">
           <v-form
             ref="form"
             v-model="valid"
@@ -50,7 +54,7 @@
 
         <material-card
           color="deep-purple"
-          title="Gesrenciar Restaurantes">
+          title="Gesrenciar Restaurantes Cadastrados: ">
           <v-card-title>
             <v-text-field
               v-model="search"
@@ -91,7 +95,8 @@
                 text
                 icon
                 large
-                color="purple darken-4">
+                color="purple darken-4"
+                @click="openModalDetalhe(item.idRestaurante, item.nomeRestaurante)">
                 <v-icon>mdi-share</v-icon>
               </v-btn>
             </template>
@@ -214,7 +219,7 @@
                 :disable="!valid"
                 color="blue darken-1"
                 text
-                @click="editarRestaurante(idRestaurante, nomeRestaurante)">
+                @click="editarRestaurante(restaurante.idRestaurante, restaurante.nomeRestaurante)">
                 Salvar
               </v-btn>
               <v-btn
@@ -222,6 +227,114 @@
                 text
                 @click="modalEdit = false">
                 Cancelar
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+        <v-dialog
+          v-model="modalDetalhe"
+          persistent
+          max-width="600">
+          <v-card>
+            <v-card-title class="headline">Detalhar Pratos do Restaurante: {{ restaurante.nomeRestaurante }}</v-card-title>
+            <v-container grid-list-md>
+              <v-form
+                ref="formEdit"
+                v-model="valid"
+                lazy-validation>
+                  <material-card
+                    color="deep-purple"
+                    title="Pratos do Restaurante: ">
+                    <v-card-title>
+                      <v-text-field
+                        v-model="search2"
+                        append-icon="mdi-magnify"
+                        label="Pesquisar..."
+                        single-line
+                        hide-details/>
+                    </v-card-title>
+                    <v-data-table
+                      :headers="headers2"
+                      :items="pratos"
+                      :search="search2"
+                      :options.sync="pagination"
+                      :items-per-page-text="textoPaginacao"
+                      hide-default-footer
+                      class="elevation-1">
+                      <template v-slot:item.delete="{ item }">
+                          {{ item.idRestaurante }}
+                      </template>
+                      <template v-slot:item.autor="{ item }">
+                          {{ item.nomePrato }}
+                      </template>
+                      <template v-slot:item.view="{ item }">
+                        {{ item.precoPrato }}
+                      </template>
+                      <template v-slot:no-data>
+                        <v-alert
+                          :value="true"
+                          color="error"
+                          icon="mdi-alert">
+                          Não há pratos cadastrados neste Restaurante! :(
+                        </v-alert>
+                      </template>
+                      <template v-slot:no-results>
+                          <v-alert
+                            :value="true"
+                            color="error"
+                            icon="mdi-alert">
+                            Você pesquisou por "{{ search2 }}", porém nenhum resultado foi encontrado.
+                          </v-alert>
+                        </template>
+                    </v-data-table>
+                    <v-snackbar
+                      :timeout="timeout"
+                      v-model="snackbarDeleteError"
+                      color="warning"
+                      top>
+                      {{ textoDeleteError }}
+                      <v-btn
+                        flat
+                        @click="snackbarDeleteError = false">
+                        <v-icon left>mdi-close-circle</v-icon>
+                      </v-btn>
+                    </v-snackbar>
+                    <v-snackbar
+                      v-model="snackbar"
+                      :timeout="timeout"
+                      color="success"
+                      top>
+                      {{ textoCadastro }}
+                      <v-btn
+                        flat
+                        @click="snackbar = false">
+                        <v-icon left>
+                          mdi-close-circle
+                        </v-icon>
+                      </v-btn>
+                    </v-snackbar>
+                    <v-snackbar
+                      :timeout="timeout"
+                      v-model="snackbarError"
+                      color="error"
+                      top>
+                      {{ textoError }}
+                      <v-btn
+                        flat
+                        @click="snackbarError = false">
+                        <v-icon left>mdi-close-circle</v-icon>
+                      </v-btn>
+                    </v-snackbar>
+                  </material-card>
+              </v-form>
+            </v-container>
+            <v-card-actions>
+              <v-spacer/>
+              <v-btn
+                color="red darken-1"
+                text
+                @click="closeModal()">
+                Fechar
               </v-btn>
             </v-card-actions>
           </v-card>
@@ -254,6 +367,7 @@ export default {
       textoCadastro: 'Cadastrado com sucesso!',
       modalEdit: false,
       modalDelete: false,
+      modalDetalhe: false,
       pagination: {
         descending: false,
         page: 1,
@@ -268,8 +382,16 @@ export default {
       textoError: 'Já existe um Restaurante com esse nome!',
       textoDeleteError: 'Ação não permitida!',
       search: '',
+      search2: '',
       verificaExiste: '',
       restaurante: {
+        idRestaurante: 0,
+        nomeRestaurante: ''
+      },
+      prato: {
+        idPrato: 0,
+        nomePrato: '',
+        precoPrato: 0,
         idRestaurante: 0,
         nomeRestaurante: ''
       },
@@ -279,6 +401,11 @@ export default {
         { text: 'Excluir', align: 'center', value: 'delete', sortable: false },
         { text: 'Detalhar', align: 'center', value: 'view', sortable: false }
       ],
+      headers2: [
+        { text: 'Id Restaurante', align: 'left', value: 'idRestaurante' },
+        { text: 'Nome Prato', align: 'left', value: 'nomePrato' },
+        { text: 'Preco Prato', align: 'left', value: 'precoPrato' }
+      ],
       nomRules: [v => !!v || 'O campo nome do restaurante é obrigatório!']
     }
   },
@@ -286,6 +413,9 @@ export default {
     ...mapState('account', ['status']),
     ...mapState({
       account: state => state.account
+    }),
+    ...mapState({
+      pratos: state => state.pratos.all.items
     }),
     ...mapState({
       restaurantes: state => state.restaurantes.all.items
@@ -313,6 +443,9 @@ export default {
       update: 'update',
       register: 'register',
       delete: 'delete'
+    }),
+    ...mapActions('pratos', {
+      getAllPrato: 'getAll'
     }),
     handleSubmit () {
       if (this.$refs.form.validate()) {
@@ -347,9 +480,9 @@ export default {
     },
     editarRestaurante(idRestaurante, nomeRestaurante) {
       this.update(this.restaurante)
-      this.modalEdit = false
       this.$refs.form.reset()
       this.getAll()
+      this.modalEdit = false
     },
     openModalDelete (idRestaurante, nomeRestaurante) {
       this.restaurante.idRestaurante = idRestaurante
@@ -358,8 +491,20 @@ export default {
     },
     deletarRestaurante (idRestaurante) {
       this.delete(idRestaurante)
+      this.$refs.form.reset()
       this.getAll()
       this.modalDelete = false
+    },
+    openModalDetalhe (idRestaurante, nomeRestaurante) {
+      this.restaurante.idRestaurante = idRestaurante
+      this.restaurante.nomeRestaurante = nomeRestaurante
+      this.modalDetalhe = true
+      this.getAllPrato()
+    },
+    closeModal () {
+      this.$refs.form.reset()
+      this.getAll()
+      this.modalDetalhe = false
     }
   }
 }
