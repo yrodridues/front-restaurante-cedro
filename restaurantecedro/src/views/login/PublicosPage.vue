@@ -142,7 +142,7 @@
             top>
             {{ textoDeleteError }}
             <v-btn
-              flat
+              text
               @click="snackbarDeleteError = false">
               <v-icon left>mdi-close-circle</v-icon>
             </v-btn>
@@ -154,7 +154,7 @@
             top>
             {{ textoCadastro }}
             <v-btn
-              flat
+              text
               @click="snackbar = false">
               <v-icon left>
                 mdi-close-circle
@@ -168,7 +168,7 @@
             top>
             {{ textoError }}
             <v-btn
-              flat
+              text
               @click="snackbarError = false">
               <v-icon left>mdi-close-circle</v-icon>
             </v-btn>
