@@ -19,4 +19,4 @@ $ npm run serve
 
 # Importante: 
 **Tenha certeza que o back esta executando corretamente enquanto trabalha com o front, Visto que esta aplicação é um Sistema Orientado a Serviços**
-> PS: caso haja algum erro com o npm, utilize o programa que esta na branch develop
+> PS: caso haja algum erro com o npm, utilize a versão que está na branch "develop"
