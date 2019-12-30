@@ -6,10 +6,17 @@ Foram utilizadas as tecnologias: C# (para o back), Vue (para o front), e o banco
 
 **Codigo Front-End:** 
 * primeiramente digite o comando:
-> 1. npm i
-> * tenha certeza que tudo foi instalado corretamente
+
+```shell
+$ npm install
+```
+* tenha certeza que tudo foi instalado corretamente
 * em seguida digite o comando:
-> 2. npm run serve
+
+```shell
+$ npm run serve
+```
 
 # Importante: 
 **Tenha certeza que o back esta executando corretamente enquanto trabalha com o front, Visto que esta aplicação é um Sistema Orientado a Serviços**
+> PS: caso haja algum erro com o npm, utilize o programa que esta na branch develop
